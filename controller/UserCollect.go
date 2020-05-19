@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"demo_items/gin_project/gin_vue_v2/connect"
 	"demo_items/gin_project/gin_vue_v2/model"
 	"demo_items/gin_project/gin_vue_v2/tools"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"net/http"
 )
 
@@ -73,7 +75,7 @@ import (
 
 func Register(c *gin.Context)  { // 注册路由函数
 
-	db := model.GetDB()
+	db := connect.GetDB()
 
 	// 获取表单相应的参数
 	uname := c.PostForm("name")
@@ -133,7 +135,7 @@ func Register(c *gin.Context)  { // 注册路由函数
 
 func Login(c *gin.Context)  { // 登录路由函数
 
-	db := model.GetDB()
+	db := connect.GetDB()
 
 	// 获取表单相应的参数
 	uname := c.PostForm("name")
@@ -159,10 +161,27 @@ func Login(c *gin.Context)  { // 登录路由函数
 	}
 
 	// 发放token
-	token := "1111"
+	token, err := connect.ReleaseToken(user)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": "token生产失败",})
+		log.Printf("token generte faild error of: %v\n", err)
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":gin.H{"token": token},
 		"success": "登录成功",
 	})
+}
+
+func Info(c *gin.Context) { // 用户信息路由函数
+	// 通过上下文获取 user 字段信息
+	user, _ := c.Get("user")
+
+	// 根据业务逻辑情况返回 user 字段的对应信息
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": gin.H{"user": user},
+	})
+
 }

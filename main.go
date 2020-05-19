@@ -1,7 +1,7 @@
 package main
 
 import (
-	"demo_items/gin_project/gin_vue_v2/model"
+	"demo_items/gin_project/gin_vue_v2/connect"
 	"demo_items/gin_project/gin_vue_v2/router"
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// 连接数据库
-	db := model.InitDB()
+	db := connect.InitDB()
 	defer db.Close() // 延迟关闭数据库
 
 	// 定义一个全局路由

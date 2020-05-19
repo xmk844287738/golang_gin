@@ -1,6 +1,7 @@
-package model
+package connect
 
 import (
+	"demo_items/gin_project/gin_vue_v2/model"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -14,7 +15,7 @@ func InitDB()  (*gorm.DB) {
 		fmt.Printf("conn mysql faild of error: %#v\n", err)
 	}
 
-	db.AutoMigrate(&User{})	// 与数据的数据表建立对应(映射)
+	db.AutoMigrate(&model.User{}) // 与数据的数据表建立对应(映射)
 
 	DB = db
 
