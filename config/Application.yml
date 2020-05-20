@@ -1,0 +1,10 @@
+
+
+dataSource:
+  driveName: mysql
+  userName: root
+  password: root
+  host: 192.168.233.1
+  port: 3306
+  dataBaseName: demo1
+  charset: utf8

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"demo_items/gin_project/gin_vue_v2/connect"
+	"demo_items/gin_project/gin_vue_v2/dto"
 	"demo_items/gin_project/gin_vue_v2/model"
 	"demo_items/gin_project/gin_vue_v2/tools"
 	"github.com/gin-gonic/gin"
@@ -177,11 +178,13 @@ func Login(c *gin.Context)  { // 登录路由函数
 func Info(c *gin.Context) { // 用户信息路由函数
 	// 通过上下文获取 user 字段信息
 	user, _ := c.Get("user")
+	//userdto := dto.GetUserInfoDto(user) // 第一种方法
+	userdto := dto.GetUserInfoDto(user.(model.User))
 
 	// 根据业务逻辑情况返回 user 字段的对应信息
 	c.JSON(http.StatusOK, gin.H{
 		"status": "success",
-		"data": gin.H{"user": user},
+		"data": gin.H{"user": userdto},
 	})
 
 }
