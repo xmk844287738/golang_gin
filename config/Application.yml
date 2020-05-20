@@ -1,5 +1,4 @@
 
-
 dataSource:
   driveName: mysql
   userName: root
