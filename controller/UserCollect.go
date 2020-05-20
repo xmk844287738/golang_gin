@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"demo_items/gin_project/gin_vue_v2/connect"
+	"demo_items/gin_project/gin_vue_v2/common"
 	"demo_items/gin_project/gin_vue_v2/dto"
 	"demo_items/gin_project/gin_vue_v2/model"
 	"demo_items/gin_project/gin_vue_v2/tools"
@@ -76,7 +76,7 @@ import (
 
 func Register(c *gin.Context)  { // 注册路由函数
 
-	db := connect.GetDB()
+	db := common.GetDB()
 
 	// 获取表单相应的参数
 	uname := c.PostForm("name")
@@ -136,7 +136,7 @@ func Register(c *gin.Context)  { // 注册路由函数
 
 func Login(c *gin.Context)  { // 登录路由函数
 
-	db := connect.GetDB()
+	db := common.GetDB()
 
 	// 获取表单相应的参数
 	uname := c.PostForm("name")
@@ -162,7 +162,7 @@ func Login(c *gin.Context)  { // 登录路由函数
 	}
 
 	// 发放token
-	token, err := connect.ReleaseToken(user)
+	token, err := common.ReleaseToken(user)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": "token生产失败",})
 		log.Printf("token generte faild error of: %v\n", err)

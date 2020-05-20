@@ -1,4 +1,4 @@
-package connect
+package common
 
 import (
     "demo_items/gin_project/gin_vue_v2/model"

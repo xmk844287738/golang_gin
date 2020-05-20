@@ -1,4 +1,7 @@
 
+server:
+  port: 9000
+
 dataSource:
   driveName: mysql
   userName: root

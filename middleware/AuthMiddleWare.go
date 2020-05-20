@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"demo_items/gin_project/gin_vue_v2/connect"
+	"demo_items/gin_project/gin_vue_v2/common"
 	"demo_items/gin_project/gin_vue_v2/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -23,7 +23,7 @@ func AuthMiddleware() (gin.HandlerFunc){
 
 		tokenString = tokenString[7:] // 截取前台传来的token 字段
 		// 检验token字段信息
-		token, claims, err := connect.ParseToken(tokenString)
+		token, claims, err := common.ParseToken(tokenString)
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusOK, gin.H{"error": "权限不足",})
 			c.Abort() // 抛弃此次 请求，不再往下执行
@@ -31,7 +31,7 @@ func AuthMiddleware() (gin.HandlerFunc){
 		}
 
 		// 根据claims里的 userID 字段，进行数据库查询校验
-		db := connect.GetDB()
+		db := common.GetDB()
 		var user model.User
 		userID := claims.UserId
 		db.Where("id=?", userID).First(&user)

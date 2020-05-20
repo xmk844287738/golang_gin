@@ -1,7 +1,7 @@
 package main
 
 import (
-	"demo_items/gin_project/gin_vue_v2/connect"
+	"demo_items/gin_project/gin_vue_v2/common"
 	"demo_items/gin_project/gin_vue_v2/router"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -42,7 +42,7 @@ func main() {
 	InitConfig()// 读取配置文件的信息
 
 	// 连接数据库
-	db := connect.InitDB()
+	db := common.InitDB()
 	defer db.Close() // 延迟关闭数据库
 
 	// 定义一个全局路由
