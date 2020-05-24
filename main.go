@@ -52,5 +52,5 @@ func main() {
 	r = router.CollecRouter(r)
 
 	// 监听服务
-	r.Run("127.0.0.1:9000")
+	r.Run(":9000")
 }

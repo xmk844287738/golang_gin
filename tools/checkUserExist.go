@@ -13,3 +13,12 @@ func IsUserNameExist(db *gorm.DB, uname string) (bool) {
 	}
 	return false
 }
+
+func IsTelephoneExist(db *gorm.DB, telephone string) (bool) {
+	var user model.User
+	db.Where("telephone=?", telephone).Find(&user)
+	if user.ID != 0 {
+		return true
+	}
+	return false
+}

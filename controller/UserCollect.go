@@ -79,9 +79,14 @@ func Register(c *gin.Context)  { // 注册路由函数
 	db := common.GetDB()
 
 	// 获取表单相应的参数
-	uname := c.PostForm("name")
-	upassword := c.PostForm("password")
-	telephone := c.PostForm("telephone")
+	//var requestObj = make(map[string]string)
+	//json.NewDecoder(c.Request.Body).Decode(&requestObj)
+
+	var registerUser = model.User{}
+	c.Bind(&registerUser)
+	uname := registerUser.Name
+	upassword := registerUser.Password
+	telephone := registerUser.Telephone
 
 	// 验证表单的参数
 	if len(uname) == 0 {
@@ -89,10 +94,10 @@ func Register(c *gin.Context)  { // 注册路由函数
 		uname = tools.RandUserName(6)
 	}
 
-	// 判断该用户名是否已经存在
-	if tools.IsUserNameExist(db, uname) {
-		c.JSON(http.StatusOK, gin.H{
-			"error": "用户名已存在",
+	// 判断该手机号是否已经存在
+	if tools.IsTelephoneExist(db, telephone) {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": gin.H{"error": "手机号已存在",},
 		})
 		return
 	}
@@ -128,9 +133,18 @@ func Register(c *gin.Context)  { // 注册路由函数
 	}
 	db.Debug().Create(&newUser)
 
+	// 发放token
+	token, err := common.ReleaseToken(newUser)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": "token生产失败",})
+		log.Printf("token generte faild error of: %v\n", err)
+		return
+	}
+
 	// 对前台进行响应
 	c.JSON(http.StatusOK, gin.H{
-		"status": "创建用户成功",
+		"data": gin.H{"token": token,},
+		"status": gin.H{"success": "用户注册成功",},
 	})
 }
 
@@ -139,24 +153,27 @@ func Login(c *gin.Context)  { // 登录路由函数
 	db := common.GetDB()
 
 	// 获取表单相应的参数
-	uname := c.PostForm("name")
-	upassword := c.PostForm("password")
+	var loginUser = model.User{}
+	c.Bind(&loginUser)
+
+	telephone := loginUser.Telephone
+	upassword := loginUser.Password
 
 	// 参数验证
 	// 验证用户名是否存在
 	var user model.User
-	db.Where("name=?", uname).Find(&user)
+	db.Where("telephone=?", telephone).Find(&user)
 	if user.ID == 0 {
-		c.JSON(http.StatusOK, gin.H{
-			"error": "用户不存在",
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "手机号不存在",
 		})
 		return
 	}
 
 	// 验证用户的密码是否正确
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password),[]byte(upassword)); err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"error": "用户密码错误，请检查",
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"status": gin.H{"error": "手机号或密码错误，请检查",},
 		})
 		return
 	}
@@ -171,7 +188,7 @@ func Login(c *gin.Context)  { // 登录路由函数
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":gin.H{"token": token},
-		"success": "登录成功",
+		"status": gin.H{"success": "用户登录成功",},
 	})
 }
 
