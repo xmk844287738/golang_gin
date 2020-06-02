@@ -10,3 +10,4 @@ dataSource:
   port: 3306
   dataBaseName: demo1
   charset: utf8
+  loc: Asia/Shanghai

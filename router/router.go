@@ -16,5 +16,12 @@ func CollecRouter(r *gin.Engine) (*gin.Engine) {
 
 	r.GET("/api/auto/info", middleware.AuthMiddleware(),controller.Info) // 用户信息路由
 
+	categoryRouter := r.Group("/categories")
+	categoryController := controller.NewCategoryController()  // 定义一个关于文章分类的路由管理器
+	categoryRouter.POST("", categoryController.Create)  // 增加分类
+	categoryRouter.DELETE("/:id", categoryController.Delete) // 删除分类
+	categoryRouter.PUT("/:id", categoryController.Update) // 修改分类
+	categoryRouter.GET("/:id", categoryController.Show)  // 查看分类
+
 	return r
 }

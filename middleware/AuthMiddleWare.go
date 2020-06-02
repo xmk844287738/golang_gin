@@ -16,7 +16,7 @@ func AuthMiddleware() (gin.HandlerFunc){
 		//strings.HasSuffix(tokenString, "Bearer ") //  检测目标字符串 tokenString 是否以字符串"Bearer " 作为结尾
 		//strings.HasSuffix(tokenString, "Bearer ") //  检测目标字符串 tokenString 是否以字符串"Bearer " 作为开头
 		if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer ") {
-			c.JSON(http.StatusOK, gin.H{"error": "权限不足",})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "权限不足",})
 			c.Abort() // 抛弃此次 请求，不再往下执行
 			return
 		}
@@ -25,7 +25,7 @@ func AuthMiddleware() (gin.HandlerFunc){
 		// 检验token字段信息
 		token, claims, err := common.ParseToken(tokenString)
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusOK, gin.H{"error": "权限不足",})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "权限不足",})
 			c.Abort() // 抛弃此次 请求，不再往下执行
 			return
 		}
@@ -36,7 +36,7 @@ func AuthMiddleware() (gin.HandlerFunc){
 		userID := claims.UserId
 		db.Where("id=?", userID).First(&user)
 		if user.ID == 0 { // 无用户记录
-			c.JSON(http.StatusOK, gin.H{"error": "权限不足",})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "权限不足",})
 			c.Abort()
 			return
 		}

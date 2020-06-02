@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/spf13/viper"
+	"net/url"
 )
 
 var DB *gorm.DB
@@ -21,15 +22,17 @@ func InitDB()  (*gorm.DB) {
 	port := viper.GetString("dataSource.port")
 	dataBaseName := viper.GetString("dataSource.dataBaseName")
 	charset := viper.GetString("dataSource.charset")
+	loc := viper.GetString("dataSource.loc")
 
 	// 参数组合
-	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True",
+	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=%s",
 		userName,
 		password,
 		host,
 		port,
 		dataBaseName,
-		charset)
+		charset,
+		url.QueryEscape(loc))
 
 	db, err := gorm.Open(driveName, args)
 	if err != nil {
