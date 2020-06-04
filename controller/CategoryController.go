@@ -4,6 +4,7 @@ import (
 	"demo_items/gin_project/gin_vue_v2/common"
 	"demo_items/gin_project/gin_vue_v2/model"
 	"demo_items/gin_project/gin_vue_v2/response"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"strconv"
@@ -21,7 +22,7 @@ type CategoryController struct {  // 定义一个关于文章分类的路由管�
 func NewCategoryController() ICategoryController {
 	db := common.GetDB() // 连接数据库
 
-	// 迁移 Category 数据模型
+	// 迁移 Category 数据模型; 与数据库建立模型映射
 	db.AutoMigrate(&model.Category{})
 
 	return CategoryController{DB:db,}
@@ -40,7 +41,10 @@ func (c CategoryController) Create(ctx *gin.Context) { //　增加分类
 	}
 
 	// 数据存入数据库
-	c.DB.Debug().Create(&createCategory)
+	if err := c.DB.Debug().Create(&createCategory).Error; err != nil { // 验证数据中是否已经存在此分类名
+		response.Fail(ctx, nil, fmt.Sprint(err))
+		return
+	}
 
 	//回应前台
 	response.Success(ctx, gin.H{"createCategory": createCategory}, "分类创建成功")
@@ -59,10 +63,10 @@ func (c CategoryController) Delete(ctx *gin.Context) {	//　删除分类
 	}
 
 	if err := c.DB.Delete(requestCategory).Error; err != nil {
-		response.Fail(ctx, nil, "删除失败!")
+		response.Fail(ctx, nil, "分类删除失败!")
 		return
 	}
-	response.Success(ctx, nil, "删除成功!")
+	response.Success(ctx, nil, "分类删除成功!")
 
 }
 
