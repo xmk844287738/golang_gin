@@ -1,5 +1,6 @@
 package model
 
+// 分类结构体
 type Category struct {
 	ID int `json:"id" gorm:"primary_key"`
 	Name string `json:"name" gorm:"type:varchar(50);not null;unique;"`
