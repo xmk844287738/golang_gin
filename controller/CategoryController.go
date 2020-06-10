@@ -13,6 +13,7 @@ import (
 // 定义一个接口方便使用编辑器完成增删改查的代码 快捷键：1.Alt + Insert 2.ctrl + I
 type ICategoryController interface {
 	ResetController
+	ShowAllCategories(ctx *gin.Context)
 }
 
 type CategoryController struct {  // 定义一个关于文章分类的路由管理器
@@ -112,5 +113,15 @@ func (c CategoryController) Show(ctx *gin.Context) { //　查询分类
 
 	response.Success(ctx, gin.H{"requestCategory":requestCategory,}, "success")
 
+}
+func (c CategoryController)ShowAllCategories(ctx *gin.Context)  {
+	// 定义一个model.Category{}类型的切片对象,承接多个分类
+	var categories  = new([]model.Category) // new 返回对应类型的指针
+	if err := c.DB.Find(categories).Error; err != nil {
+		fmt.Println(err.Error())
+		response.Fail(ctx, nil, "查找所有分类失败")
+		return
+	}
+	response.Success(ctx, gin.H{"categories": categories, }, "查找所有分类成功")
 }
 

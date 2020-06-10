@@ -8,10 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"log"
+	"strconv"
 )
 
 type IPostController interface {
 	ResetController
+	MultiplyShows(ctx *gin.Context)
 }
 
 type PostController struct {
@@ -131,16 +133,39 @@ func (p PostController) Show(ctx *gin.Context) { // 查询文章
 	postId := ctx.Params.ByName("postId")
 
 	// 声明一个Post结构体对象
-	var posts  = model.Post{}
+	var post  = model.Post{}
 
 	// 查询数据库，把查询结构赋值给Post结构体对象, 根据文章的id 判断是否存在于数据库中
 	// Preload 外键查询(Category、 CategoryId 符合对应的外键关系)
-	if p.DB.Debug().Preload("Category").Where("id=?", postId).First(&posts).RecordNotFound() {
+	if p.DB.Debug().Preload("Category").Where("id=?", postId).First(&post).RecordNotFound() {
 		response.Fail(ctx, nil, "文章不存在")
 		return
 	}
 
 	// 给前台回应
-	response.Success(ctx, gin.H{"posts": posts,}, "成功")
+	response.Success(ctx, gin.H{"post": post,}, "成功")
+
+}
+
+func (p PostController) MultiplyShows(ctx *gin.Context)  { // 查询多篇文章
+	// 获取path参数
+	postNumStr := ctx.Query("postNum")
+	postNum, _ := strconv.Atoi(postNumStr)
+	offsetStr := ctx.Query("offset") // 获取文章数量查询的偏移值
+	offset, _ := strconv.Atoi(offsetStr)
+
+
+	// 定义一个Post结构体类型的切片对象，承接postNum篇文章
+	posts := new([]model.Post) // new 返回对应类型的指针
+
+	// 按照查询数据库前postNum篇文章
+	if err := p.DB.Debug().Preload("Category").Limit(postNum).Offset(offset * postNum).Find(posts).Error; err != nil {
+		response.Fail(ctx, nil, "多篇文章查询失败")
+		return
+	}
+
+	// 给前台回应
+	response.Success(ctx, gin.H{"posts": posts,}, "多篇文章查询成功")
+
 
 }
